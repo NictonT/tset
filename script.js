@@ -1,6 +1,8 @@
-// Load the Excel file from the server or local folder
-function loadExcelFile(url) {
-    fetch(url)
+// Load the Excel file from OneDrive
+function loadExcelFile() {
+    const onedriveFileLink = 'https://onedrive.live.com/download?resid=EbM18b0Xt_VDsLLHO4Kn0JgBJDKZgwSLyM4ralXBEotyWg'; // Replace with your actual OneDrive link
+
+    fetch(onedriveFileLink)
         .then(response => response.arrayBuffer())
         .then(data => {
             const workbook = XLSX.read(data, { type: 'array' });
@@ -84,5 +86,5 @@ function displayBooks(books) {
     });
 }
 
-// Load the Excel file and display its contents
-loadExcelFile('(https://1drv.ms/x/c/83fdca97af7099ec/EbM18b0Xt_VDsLLHO4Kn0JgBJDKZgwSLyM4ralXBEotyWg?e=yCaye4)'); // 
+// Load the Excel file when the page is ready
+loadExcelFile();
