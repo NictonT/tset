@@ -12,6 +12,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Open+Sans&display=swap" rel="stylesheet">
     <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- XLSX Library for Excel Parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -19,7 +21,7 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white py-3 shadow-sm">
         <div class="container">
             <a class="navbar-brand fw-bold fs-4" href="index.html">
-                <img src="photos/logo/logo.png" alt="Kerkuk Kitabevi Logo" class="logo-img me-2" style="max-width: 100px; height: auto;">
+                <img src="logo.png" alt="Kerkuk Kitabevi Logo" class="logo-img me-2">
                 Kerkuk Kitabevi
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -71,14 +73,36 @@
                 </ul>
             </div>
             <div class="mb-4">
-                <input type="text" class="form-control" id="searchInput" placeholder="Search books..." onkeyup="applyFilters()">
+                <input type="text" class="form-control" placeholder="Search books...">
             </div>
-            <div class="row g-4" id="booksContainer">
-                <!-- Book Items will be displayed here dynamically -->
+            <div class="row g-4">
+                <!-- Book Items -->
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <img src="book1.jpg" class="card-img-top" alt="Book Title 1">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">Book Title 1</h5>
+                            <p class="card-text text-muted">by Author Name</p>
+                            <a href="#" class="btn btn-outline-primary mt-auto">View Details</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card h-100 shadow-sm">
+                        <img src="book2.jpg" class="card-img-top" alt="Book Title 2">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title">Book Title 2</h5>
+                            <p class="card-text text-muted">by Author Name</p>
+                            <a href="#" class="btn btn-outline-primary mt-auto">View Details</a>
+                        </div>
+                    </div>
+                </div>
             </div>
             <nav aria-label="Page navigation" class="mt-4">
-                <ul class="pagination justify-content-center" id="pagination">
-                    <!-- Pagination Items will be displayed here dynamically -->
+                <ul class="pagination justify-content-center">
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
                 </ul>
             </nav>
         </div>
@@ -124,76 +148,35 @@
 
     <!-- Bootstrap JS Bundle with Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.16.9/xlsx.full.min.js"></script>
     <script>
-        let currentPage = 1;
-        const booksPerPage = 25;
-        let filteredBooks = [];
-
-        // Load the Excel file from OneDrive
-        function loadExcelFile() {
-            const onedriveFileLink = 'https://onedrive.live.com/download?resid=EbM18b0Xt_VDsLLHO4Kn0JgBJDKZgwSLyM4ralXBEotyWg'; // Replace with your actual OneDrive link
-            fetch(onedriveFileLink)
-                .then(response => response.arrayBuffer())
-                .then(data => {
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                    console.log('Loaded Excel Data:', jsonData); // Debugging to check the loaded data
-                    if (jsonData.length > 1) {
-                        processExcelData(jsonData);
-                    } else {
-                        console.error('Excel file contains no data or is not formatted correctly.');
-                    }
-                })
-                .catch(error => console.error('Error fetching the Excel file:', error));
+        function applyFilters() {
+            // This function should trigger the necessary actions to apply selected filters.
+            // Reload the page or refresh the displayed content based on filters.
+            const ageMin = document.getElementById('ageRangeMin').value;
+            const ageMax = document.getElementById('ageRangeMax').value;
+            const priceMin = document.getElementById('priceRangeMin').value;
+            const priceMax = document.getElementById('priceRangeMax').value;
+            console.log(`Filters applied: Age ${ageMin}-${ageMax}, Price ${priceMin}-${priceMax}`);
+            location.reload();
         }
 
-        // Process Excel Data to Extract Book Information
-        function processExcelData(data) {
-            const headers = data[0];
-            filteredBooks = data.slice(1).map(row => {
-                let book = {};
-                headers.forEach((header, index) => {
-                    book[header.trim().toLowerCase()] = row[index] || 'N/A';
-                });
-                return book;
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch('Untitled.xlsx').then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.arrayBuffer();
+            }).then(data => {
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
+                const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                console.log(jsonData); // Logging data for verification
+            }).catch(error => {
+                console.error('Error fetching or parsing the XLSX file:', error);
             });
-            displayBooks();
-        }
+        });
+    </script>
 
-        // Function to display books in the container
-        function displayBooks() {
-            const booksContainer = document.getElementById('booksContainer');
-            booksContainer.innerHTML = '';
-
-            if (filteredBooks.length === 0) {
-                booksContainer.innerHTML = '<p class="text-center">No books found.</p>';
-                return;
-            }
-
-            const start = (currentPage - 1) * booksPerPage;
-            const end = start + booksPerPage;
-            const booksToDisplay = filteredBooks.slice(start, end);
-
-            booksToDisplay.forEach(book => {
-                const bookCard = document.createElement('div');
-                bookCard.className = 'col-md-4';
-                bookCard.innerHTML = `
-                    <div class="card h-100 shadow-sm">
-                        <img src="${book['photo'] || 'default.jpg'}" class="card-img-top" alt="${book['book name'] || 'N/A'}">
-                        <div class="card-body d-flex flex-column">
-                            <h5 class="card-title">${book['book name'] || 'N/A'}</h5>
-                            <p class="card-text text-muted">by ${book['author'] || 'N/A'} (${book['publishing date'] || 'N/A'})</p>
-                            <a href="#" class="btn btn-outline-primary mt-auto">View Details</a>
-                        </div>
-                    </div>
-                `;
-                booksContainer.appendChild(bookCard);
-            });
-
-            updatePagination();
-        }
-
-        //
+</body>
+</html>
