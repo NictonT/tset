@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book List Search</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        input {
+            margin-bottom: 10px;
+            width: 300px;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Book List Search</h1>
+    <input type="text" id="search" placeholder="Search books..." onkeyup="filterTable()">
+    <table id="bookTable">
+        <thead>
+            <tr>
+                <th>Book Name</th>
+                <th>Author</th>
+                <th>Status</th>
+                <th>Category</th>
+                <th>Age</th>
+                <th>Description</th>
+                <th>Language</th>
+                <th>Price</th>
+                <th>ISBN 10</th>
+                <th>ISBN 13</th>
+                <th>Papers</th>
+                <th>Publishing Date</th>
+                <th>Photo</th>
+            </tr>
+        </thead>
+        <tbody id="bookTableBody">
+        </tbody>
+    </table>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch('Untitled.xlsx').then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.arrayBuffer();
+            }).then(data => {
+                const workbook = XLSX.read(data, { type: 'array' });
+                const sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
+                const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                populateTable(jsonData);
+            }).catch(error => {
+                console.error('Error fetching or parsing the XLSX file:', error);
+            });
+        });
+
+        function populateTable(data) {
+            const tableBody = document.getElementById('bookTableBody');
+            tableBody.innerHTML = "";
+            const headers = data[0];
+            data.slice(1).forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row[headers.indexOf('book name')] || ''}</td>
+                    <td>${row[headers.indexOf('author')] || ''}</td>
+                    <td>${row[headers.indexOf('status')] || ''}</td>
+                    <td>${row[headers.indexOf('category')] || ''}</td>
+                    <td>${row[headers.indexOf('age')] || ''}</td>
+                    <td>${row[headers.indexOf('description')] || ''}</td>
+                    <td>${row[headers.indexOf('language')] || ''}</td>
+                    <td>${row[headers.indexOf('price')] || ''}</td>
+                    <td>${row[headers.indexOf('ISBN 10')] || ''}</td>
+                    <td>${row[headers.indexOf('ISBN 13')] || ''}</td>
+                    <td>${row[headers.indexOf('papers')] || ''}</td>
+                    <td>${row[headers.indexOf('publishing date')] || ''}</td>
+                    <td><img src="${row[headers.indexOf('Photo')] || ''}" alt="Book Photo" width="50"></td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function filterTable() {
+            const searchValue = document.getElementById('search').value.toLowerCase();
+            const rows = document.getElementById('bookTableBody').getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                let rowText = rows[i].textContent.toLowerCase();
+                rows[i].style.display = rowText.includes(searchValue) ? '' : 'none';
+            }
+        }
+    </script>
+</body>
+</html>
