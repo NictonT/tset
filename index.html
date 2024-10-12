@@ -73,9 +73,9 @@
                 </ul>
             </div>
             <div class="mb-4">
-                <input type="text" class="form-control" placeholder="Search books...">
+                <input type="text" class="form-control" id="searchBooks" placeholder="Search books..." onkeyup="filterBooks()">
             </div>
-            <div class="row g-4">
+            <div class="row g-4" id="booksContainer">
                 <!-- Book Items -->
                 <div class="col-md-4">
                     <div class="card h-100 shadow-sm">
@@ -158,6 +158,15 @@
             const priceMax = document.getElementById('priceRangeMax').value;
             console.log(`Filters applied: Age ${ageMin}-${ageMax}, Price ${priceMin}-${priceMax}`);
             location.reload();
+        }
+
+        function filterBooks() {
+            const searchValue = document.getElementById('searchBooks').value.toLowerCase();
+            const books = document.getElementById('booksContainer').getElementsByClassName('col-md-4');
+            for (let i = 0; i < books.length; i++) {
+                let bookText = books[i].textContent.toLowerCase();
+                books[i].style.display = bookText.includes(searchValue) ? '' : 'none';
+            }
         }
 
         document.addEventListener("DOMContentLoaded", function() {
