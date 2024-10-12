@@ -2,149 +2,57 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Kerkuk Kitabevi - Books</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700&family=Open+Sans&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Book List Search</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        input {
+            margin-bottom: 10px;
+            width: 300px;
+            padding: 8px;
+        }
+    </style>
 </head>
 <body>
+    <h1>Book List Search</h1>
+    <input type="text" id="search" placeholder="Search books..." onkeyup="filterTable()">
+    <table id="bookTable">
+        <thead>
+            <tr>
+                <th>Book Name</th>
+                <th>Author</th>
+                <th>Status</th>
+                <th>Category</th>
+                <th>Age</th>
+                <th>Description</th>
+                <th>Language</th>
+                <th>Price</th>
+                <th>ISBN 10</th>
+                <th>ISBN 13</th>
+                <th>Papers</th>
+                <th>Publishing Date</th>
+                <th>Photo</th>
+            </tr>
+        </thead>
+        <tbody id="bookTableBody">
+        </tbody>
+    </table>
 
-    <nav class="navbar navbar-expand-lg navbar-light bg-white py-3 shadow-sm">
-        <div class="container">
-            <a class="navbar-brand fw-bold fs-4" href="index.html">
-                <img src="logo.png" alt="Kerkuk Kitabevi Logo" class="logo-img me-2">
-                Kerkuk Kitabevi
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav align-items-center">
-                    <li class="nav-item mx-2">
-                        <a class="nav-link" aria-current="page" href="index.html">Home</a>
-                    </li>
-                    <li class="nav-item mx-2">
-                        <a class="nav-link active" href="books.html">Books</a>
-                    </li>
-                    <li class="nav-item mx-2">
-                        <a class="nav-link" href="contact.html">Contact</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <section class="books-section py-5">
-        <div class="container">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="text-center mb-0">Books</h2>
-                <button class="btn btn-light border dropdown-toggle" type="button" id="filterDropdown" data-bs-toggle="dropdown" aria-expanded="false">Filter</button>
-                <ul class="dropdown-menu" aria-labelledby="filterDropdown">
-                    <li><a class="dropdown-item" href="#">Category</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><div class="px-4 py-2">
-                        <label for="ageRangeMin" class="form-label">Age Range (Min - Max)</label>
-                        <div class="d-flex align-items-center">
-                            <input type="number" id="ageRangeMin" class="form-control me-2" min="10" max="18" value="10">
-                            <input type="number" id="ageRangeMax" class="form-control" min="10" max="18" value="18">
-                        </div>
-                    </div></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><div class="px-4 py-2">
-                        <label for="priceRange" class="form-label">Price Range (IQD)</label>
-                        <div class="d-flex align-items-center">
-                            <input type="number" id="priceRangeMin" class="form-control me-2" min="250" max="50000" step="250" value="250">
-                            <input type="number" id="priceRangeMax" class="form-control" min="250" max="50000" step="250" value="50000">
-                        </div>
-                    </div></li>
-                    <li class="text-center py-2">
-                        <button class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
-                    </li>
-                </ul>
-            </div>
-            <div class="mb-4">
-                <input type="text" class="form-control" id="searchBooks" placeholder="Search books..." onkeyup="filterBooks()">
-            </div>
-            <div class="row g-4" id="booksContainer"></div>
-            <nav aria-label="Page navigation" class="mt-4">
-                <ul class="pagination justify-content-center">
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
-                </ul>
-            </nav>
-        </div>
-    </section>
-
-    <footer class="bg-dark text-white pt-5">
-        <div class="container">
-            <div class="row mb-4">
-                <div class="col-md-4">
-                    <h5>About Us</h5>
-                    <p>At Kerkuk Kitabevi, we connect readers with stories that inspire and entertain. Join our community and dive into the world of books.</p>
-                </div>
-                <div class="col-md-2">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="index.html" class="text-white-50">Home</a></li>
-                        <li><a href="books.html" class="text-white-50">Books</a></li>
-                        <li><a href="contact.html" class="text-white-50">Contact</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-3">
-                    <h5>Contact Info</h5>
-                    <p><i class="fas fa-envelope me-2"></i><a href="mailto:contact@kerkukkitabevi.net" class="text-white-50">contact@kerkukkitabevi.net</a></p>
-                    <p><i class="fas fa-phone me-2"></i><a href="tel:+9647750179472" class="text-white-50">+964 775 017 9472</a></p>
-                    <p><i class="fas fa-map-marker-alt me-2"></i>123 Book Street, Literature City</p>
-                </div>
-                <div class="col-md-3">
-                    <h5>Follow Us</h5>
-                    <div class="d-flex">
-                        <a href="https://www.instagram.com/kerkuk_kitabevi82?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" class="text-white-50 me-3">
-                            <i class="fab fa-instagram fa-2x"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <div class="border-top border-secondary pt-3 text-center">
-                <p class="mb-0">&copy; 2023 Kerkuk Kitabevi. All rights reserved.</p>
-                <p><a href="index.html" class="text-white-50">Privacy Policy</a> | <a href="index.html" class="text-white-50">Terms of Service</a></p>
-            </div>
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function applyFilters() {
-            const ageMin = document.getElementById('ageRangeMin').value;
-            const ageMax = document.getElementById('ageRangeMax').value;
-            const priceMin = document.getElementById('priceRangeMin').value;
-            const priceMax = document.getElementById('priceRangeMax').value;
-            const books = document.getElementById('booksContainer').getElementsByClassName('col-md-4');
-
-            for (let i = 0; i < books.length; i++) {
-                let book = books[i];
-                let bookPrice = parseFloat(book.querySelector('.card-text.price').textContent.replace('Price: ', '').replace('IQD', ''));
-                let bookAge = parseInt(book.dataset.age);
-                let show = bookPrice >= priceMin && bookPrice <= priceMax && bookAge >= ageMin && bookAge <= ageMax;
-                book.style.display = show ? '' : 'none';
-            }
-        }
-
-        function filterBooks() {
-            const searchValue = document.getElementById('searchBooks').value.toLowerCase();
-            const books = document.getElementById('booksContainer').getElementsByClassName('col-md-4');
-            for (let i = 0; i < books.length; i++) {
-                let bookText = books[i].textContent.toLowerCase();
-                books[i].style.display = bookText.includes(searchValue) ? '' : 'none';
-            }
-        }
-
         document.addEventListener("DOMContentLoaded", function() {
-            fetch('Book 1.xlsx').then(response => {
+            fetch('Untitled.xlsx').then(response => {
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
@@ -154,41 +62,45 @@
                 const sheetName = workbook.SheetNames[0];
                 const sheet = workbook.Sheets[sheetName];
                 const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-                const booksContainer = document.getElementById('booksContainer');
-                booksContainer.innerHTML = '';
-
-                jsonData.slice(1).forEach(row => {
-                    if (row.length > 0) {
-                        const bookName = row[0] || 'Unknown Title';
-                        const author = row[1] || 'Unknown Author';
-                        const price = row[7] ? `${row[7]} IQD` : 'Price not available';
-                        const isbn10 = row[8] || 'N/A';
-                        const imgSrc = row[12] ? row[12] : 'default_book.jpg';
-                        const age = row[4] || 0;
-
-                        const bookHTML = `
-                            <div class="col-md-4" data-age="${age}">
-                                <div class="card h-100 shadow-sm">
-                                    <img src="${imgSrc}" class="card-img-top" alt="${bookName}">
-                                    <div class="card-body d-flex flex-column">
-                                        <h5 class="card-title">${bookName}</h5>
-                                        <p class="card-text text-muted">by ${author}</p>
-                                        <p class="card-text price">Price: ${price}</p>
-                                        <p class="card-text">ISBN-10: ${isbn10}</p>
-                                        <a href="#" class="btn btn-outline-primary mt-auto">View Details</a>
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-
-                        booksContainer.insertAdjacentHTML('beforeend', bookHTML);
-                    }
-                });
+                populateTable(jsonData);
             }).catch(error => {
                 console.error('Error fetching or parsing the XLSX file:', error);
             });
         });
-    </script>
 
+        function populateTable(data) {
+            const tableBody = document.getElementById('bookTableBody');
+            tableBody.innerHTML = "";
+            const headers = data[0];
+            data.slice(1).forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${row[headers.indexOf('book name')] || ''}</td>
+                    <td>${row[headers.indexOf('author')] || ''}</td>
+                    <td>${row[headers.indexOf('status')] || ''}</td>
+                    <td>${row[headers.indexOf('category')] || ''}</td>
+                    <td>${row[headers.indexOf('age')] || ''}</td>
+                    <td>${row[headers.indexOf('description')] || ''}</td>
+                    <td>${row[headers.indexOf('language')] || ''}</td>
+                    <td>${row[headers.indexOf('price')] || ''}</td>
+                    <td>${row[headers.indexOf('ISBN 10')] || ''}</td>
+                    <td>${row[headers.indexOf('ISBN 13')] || ''}</td>
+                    <td>${row[headers.indexOf('papers')] || ''}</td>
+                    <td>${row[headers.indexOf('publishing date')] || ''}</td>
+                    <td><img src="${row[headers.indexOf('Photo')] || ''}" alt="Book Photo" width="50"></td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function filterTable() {
+            const searchValue = document.getElementById('search').value.toLowerCase();
+            const rows = document.getElementById('bookTableBody').getElementsByTagName('tr');
+            for (let i = 0; i < rows.length; i++) {
+                let rowText = rows[i].textContent.toLowerCase();
+                rows[i].style.display = rowText.includes(searchValue) ? '' : 'none';
+            }
+        }
+    </script>
 </body>
 </html>
