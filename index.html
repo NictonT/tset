@@ -23,6 +23,9 @@
             width: 300px;
             padding: 8px;
         }
+        thead {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -73,23 +76,25 @@
             tableBody.innerHTML = "";
             const headers = data[0];
             data.slice(1).forEach(row => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${row[headers.indexOf('book name')] || ''}</td>
-                    <td>${row[headers.indexOf('author')] || ''}</td>
-                    <td>${row[headers.indexOf('status')] || ''}</td>
-                    <td>${row[headers.indexOf('category')] || ''}</td>
-                    <td>${row[headers.indexOf('age')] || ''}</td>
-                    <td>${row[headers.indexOf('description')] || ''}</td>
-                    <td>${row[headers.indexOf('language')] || ''}</td>
-                    <td>${row[headers.indexOf('price')] || ''}</td>
-                    <td>${row[headers.indexOf('ISBN 10')] || ''}</td>
-                    <td>${row[headers.indexOf('ISBN 13')] || ''}</td>
-                    <td>${row[headers.indexOf('papers')] || ''}</td>
-                    <td>${row[headers.indexOf('publishing date')] || ''}</td>
-                    <td><img src="${row[headers.indexOf('Photo')] || ''}" alt="Book Photo" width="50"></td>
-                `;
-                tableBody.appendChild(tr);
+                if (row.length > 0) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row[headers.indexOf('book name')] || ''}</td>
+                        <td>${row[headers.indexOf('author')] || ''}</td>
+                        <td>${row[headers.indexOf('status')] || ''}</td>
+                        <td>${row[headers.indexOf('category')] || ''}</td>
+                        <td>${row[headers.indexOf('age')] || ''}</td>
+                        <td>${row[headers.indexOf('description')] || ''}</td>
+                        <td>${row[headers.indexOf('language')] || ''}</td>
+                        <td>${row[headers.indexOf('price')] || ''}</td>
+                        <td>${row[headers.indexOf('ISBN 10')] || ''}</td>
+                        <td>${row[headers.indexOf('ISBN 13')] || ''}</td>
+                        <td>${row[headers.indexOf('papers')] || ''}</td>
+                        <td>${row[headers.indexOf('publishing date')] || ''}</td>
+                        <td><img src="${row[headers.indexOf('Photo')] || ''}" alt="Book Photo" width="50"></td>
+                    `;
+                    tableBody.appendChild(tr);
+                }
             });
         }
 
