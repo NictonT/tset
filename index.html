@@ -141,7 +141,11 @@
                     const worksheet = workbook.Sheets[firstSheetName];
                     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                     console.log('Loaded Excel Data:', jsonData); // Debugging to check the loaded data
-                    processExcelData(jsonData);
+                    if (jsonData.length > 1) {
+                        processExcelData(jsonData);
+                    } else {
+                        console.error('Excel file contains no data or is not formatted correctly.');
+                    }
                 })
                 .catch(error => console.error('Error fetching the Excel file:', error));
         }
@@ -152,7 +156,7 @@
             filteredBooks = data.slice(1).map(row => {
                 let book = {};
                 headers.forEach((header, index) => {
-                    book[header] = row[index] || 'N/A';
+                    book[header.trim().toLowerCase()] = row[index] || 'N/A';
                 });
                 return book;
             });
@@ -192,54 +196,4 @@
             updatePagination();
         }
 
-        // Function to update pagination
-        function updatePagination() {
-            const pagination = document.getElementById('pagination');
-            pagination.innerHTML = '';
-            const totalPages = Math.ceil(filteredBooks.length / booksPerPage);
-
-            for (let i = 1; i <= totalPages; i++) {
-                const pageItem = document.createElement('li');
-                pageItem.className = `page-item ${i === currentPage ? 'active' : ''}`;
-                pageItem.innerHTML = `<a class="page-link" href="#" onclick="changePage(${i})">${i}</a>`;
-                pagination.appendChild(pageItem);
-            }
-        }
-
-        // Function to change the page
-        function changePage(pageNumber) {
-            currentPage = pageNumber;
-            displayBooks();
-        }
-
-        // Function to apply filters
-        function applyFilters() {
-            const ageMin = parseInt(document.getElementById('ageRangeMin').value);
-            const ageMax = parseInt(document.getElementById('ageRangeMax').value);
-            const priceMin = parseInt(document.getElementById('priceRangeMin').value);
-            const priceMax = parseInt(document.getElementById('priceRangeMax').value);
-            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
-
-            filteredBooks = filteredBooks.filter(book => {
-                const bookAge = parseInt(book['age']) || 0;
-                const bookPrice = parseInt(book['price']) || 0;
-                const bookName = book['book name'] ? book['book name'].toLowerCase() : '';
-                const bookCategory = book['category'] ? book['category'].toLowerCase() : '';
-
-                return (
-                    bookAge >= ageMin && bookAge <= ageMax &&
-                    bookPrice >= priceMin && bookPrice <= priceMax &&
-                    (bookName.includes(searchQuery) || bookCategory.includes(searchQuery))
-                );
-            });
-
-            currentPage = 1;
-            displayBooks();
-        }
-
-        // Load the Excel file when the page is ready
-        loadExcelFile();
-    </script>
-
-</body>
-</html>
+        //
