@@ -139,12 +139,24 @@
                     const workbook = XLSX.read(data, { type: 'array' });
                     const firstSheetName = workbook.SheetNames[0];
                     const worksheet = workbook.Sheets[firstSheetName];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet);
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                     console.log('Loaded Excel Data:', jsonData); // Debugging to check the loaded data
-                    filteredBooks = jsonData;
-                    displayBooks();
+                    processExcelData(jsonData);
                 })
                 .catch(error => console.error('Error fetching the Excel file:', error));
+        }
+
+        // Process Excel Data to Extract Book Information
+        function processExcelData(data) {
+            const headers = data[0];
+            filteredBooks = data.slice(1).map(row => {
+                let book = {};
+                headers.forEach((header, index) => {
+                    book[header] = row[index] || 'N/A';
+                });
+                return book;
+            });
+            displayBooks();
         }
 
         // Function to display books in the container
